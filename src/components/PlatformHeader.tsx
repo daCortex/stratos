@@ -5,8 +5,8 @@ import { logoutAction } from "@/app/actions";
 export default async function PlatformHeader() {
   const user = await currentUser();
   return (
-    <header style={{ borderBottom: "1px solid var(--border)", background: "color-mix(in srgb, var(--bg) 70%, transparent)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 50 }}>
-      <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+    <header className="site-header">
+      <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 66 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/stratos-reversed.svg" alt="Stratos" style={{ height: 30, width: "auto" }} />

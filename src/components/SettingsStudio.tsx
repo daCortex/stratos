@@ -11,13 +11,14 @@ type Cfg = {
   settings: Org["settings"]; codeshares: Codeshare[];
 };
 
-const TABS = ["Brand", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "General", "Data"] as const;
+const TABS = ["Brand", "Feel", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "General", "Data"] as const;
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function SettingsStudio({ org, saved }: { org: Org; saved?: boolean }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Brand");
   const [cfg, setCfg] = useState<Cfg>(() => ({
-    name: org.name, callsignPrefix: org.callsignPrefix, branding: { ...org.branding },
+    name: org.name, callsignPrefix: org.callsignPrefix,
+    branding: { density: "cozy", buttonShape: "soft", headerStyle: "blur", saturation: 60, flat: false, ...org.branding },
     nav: org.nav.map((n) => ({ ...n })), hubs: org.hubs.map((h) => ({ ...h })),
     fleet: org.fleet.map((f) => ({ ...f })), ranks: org.ranks.map((r) => ({ ...r })),
     multipliers: org.multipliers.map((m) => ({ ...m })), settings: { ...org.settings },
@@ -91,6 +92,24 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
             <Field label={`Corner radius · ${cfg.branding.radius}px`}>
               <input type="range" min={0} max={24} value={cfg.branding.radius} onChange={(e) => setBrand({ radius: +e.target.value })} style={{ width: "100%" }} />
             </Field>
+          </Panel>
+        )}
+
+        {tab === "Feel" && (
+          <Panel>
+            <Field label="Density">
+              <Segmented value={cfg.branding.density ?? "cozy"} options={[["compact", "Compact"], ["cozy", "Cozy"], ["spacious", "Spacious"]]} onChange={(v) => setBrand({ density: v as any })} />
+            </Field>
+            <Field label={`Colour intensity · ${cfg.branding.saturation ?? 60}`}>
+              <input type="range" min={30} max={90} value={cfg.branding.saturation ?? 60} onChange={(e) => setBrand({ saturation: +e.target.value })} style={{ width: "100%", accentColor: "var(--primary)" }} />
+            </Field>
+            <Field label="Button shape">
+              <Segmented value={cfg.branding.buttonShape ?? "soft"} options={[["soft", "Soft"], ["pill", "Pill"], ["sharp", "Sharp"]]} onChange={(v) => setBrand({ buttonShape: v as any })} />
+            </Field>
+            <Field label="Header style">
+              <Segmented value={cfg.branding.headerStyle ?? "blur"} options={[["blur", "Glass"], ["solid", "Solid"], ["minimal", "Minimal"]]} onChange={(v) => setBrand({ headerStyle: v as any })} />
+            </Field>
+            <Toggle label="Flat surfaces (no shadows)" v={!!cfg.branding.flat} set={(v) => setBrand({ flat: v })} />
           </Panel>
         )}
 
@@ -302,6 +321,16 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
 
 function Panel({ children }: { children: React.ReactNode }) {
   return <div className="card" style={{ padding: "1.3rem", display: "grid", gap: 14 }}>{children}</div>;
+}
+function Segmented({ value, options, onChange }: { value: string; options: [string, string][]; onChange: (v: string) => void }) {
+  return (
+    <div style={{ display: "flex", gap: 6 }}>
+      {options.map(([val, label]) => (
+        <button key={val} type="button" onClick={() => onChange(val)} className="btn btn-sm"
+          style={{ flex: 1, border: "1px solid var(--border)", background: value === val ? "var(--primary)" : "transparent", color: value === val ? "var(--on-primary)" : "var(--text)" }}>{label}</button>
+      ))}
+    </div>
+  );
 }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label className="label">{label}</label>{children}</div>;

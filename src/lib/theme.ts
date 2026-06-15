@@ -46,17 +46,27 @@ export function brandingToCss(b: Branding): Record<string, string> {
   const h = b.hue;
   const a = b.accentHue;
   const dark = b.mode === "dark";
+  const sat = b.saturation ?? 60; // palette colour intensity
 
-  const bg = dark ? `hsl(${h} 18% 7%)` : `hsl(${h} 24% 97%)`;
-  const surface = dark ? `hsl(${h} 16% 11%)` : `hsl(${h} 22% 99%)`;
-  const surface2 = dark ? `hsl(${h} 15% 15%)` : `hsl(${h} 20% 94%)`;
-  const border = dark ? `hsl(${h} 14% 22%)` : `hsl(${h} 18% 86%)`;
-  const text = dark ? `hsl(${h} 30% 96%)` : `hsl(${h} 30% 12%)`;
-  const textDim = dark ? `hsl(${h} 12% 70%)` : `hsl(${h} 12% 38%)`;
-  const textFaint = dark ? `hsl(${h} 10% 48%)` : `hsl(${h} 10% 58%)`;
-  const primary = `hsl(${h} 70% ${dark ? 62 : 46}%)`;
-  const primarySoft = `hsl(${h} 55% ${dark ? 40 : 60}%)`;
-  const accent = `hsl(${a} 72% ${dark ? 64 : 48}%)`;
+  const bg = dark ? `hsl(${h} ${sat * 0.3}% 7%)` : `hsl(${h} ${sat * 0.4}% 97.5%)`;
+  const surface = dark ? `hsl(${h} ${sat * 0.26}% 10.5%)` : `hsl(${h} ${sat * 0.36}% 99.5%)`;
+  const surface2 = dark ? `hsl(${h} ${sat * 0.25}% 14.5%)` : `hsl(${h} ${sat * 0.33}% 94.5%)`;
+  const border = dark ? `hsl(${h} ${sat * 0.23}% 20%)` : `hsl(${h} ${sat * 0.3}% 88%)`;
+  const text = dark ? `hsl(${h} 30% 96%)` : `hsl(${h} 32% 12%)`;
+  const textDim = dark ? `hsl(${h} 12% 68%)` : `hsl(${h} 14% 40%)`;
+  const textFaint = dark ? `hsl(${h} 10% 46%)` : `hsl(${h} 10% 58%)`;
+  const primary = `hsl(${h} ${sat + 10}% ${dark ? 62 : 46}%)`;
+  const primarySoft = `hsl(${h} ${sat - 5}% ${dark ? 40 : 60}%)`;
+  const accent = `hsl(${a} ${sat + 12}% ${dark ? 64 : 48}%)`;
+
+  // feel knobs
+  const density = b.density ?? "cozy";
+  const space = density === "compact" ? 0.82 : density === "spacious" ? 1.22 : 1;
+  const btnRadius = b.buttonShape === "pill" ? "999px" : b.buttonShape === "sharp" ? "4px" : `calc(${b.radius}px - 4px)`;
+  const headerStyle = b.headerStyle ?? "blur";
+  const headerBg = headerStyle === "solid" ? surface : headerStyle === "minimal" ? "transparent" : `color-mix(in srgb, ${surface} 78%, transparent)`;
+  const headerBlur = headerStyle === "blur" ? "saturate(140%) blur(12px)" : "none";
+  const headerBorder = headerStyle === "minimal" ? "transparent" : border;
 
   let pageBg = bg;
   if (b.bgType === "gradient") {
@@ -82,6 +92,12 @@ export function brandingToCss(b: Branding): Record<string, string> {
     "--accent": accent,
     "--on-primary": dark ? `hsl(${h} 30% 8%)` : "hsl(0 0% 100%)",
     "--radius": `${b.radius}px`,
+    "--btn-radius": btnRadius,
+    "--space": String(space),
+    "--header-bg": headerBg,
+    "--header-blur": headerBlur,
+    "--header-border": headerBorder,
+    "--shadow": b.flat ? "none" : dark ? "0 1px 2px hsl(0 0% 0% / 0.4), 0 8px 24px hsl(0 0% 0% / 0.22)" : "0 1px 2px hsl(220 20% 40% / 0.08), 0 8px 24px hsl(220 20% 40% / 0.08)",
     "--font-body": fontStack(b.font),
     "--font-head": fontStack(b.headingFont),
   };
@@ -105,6 +121,11 @@ export function defaultBranding(hue = 215): Branding {
     radius: 14,
     bgType: "solid",
     bgValue: "",
+    density: "cozy",
+    buttonShape: "soft",
+    headerStyle: "blur",
+    saturation: 60,
+    flat: false,
   };
 }
 

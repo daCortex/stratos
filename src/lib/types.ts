@@ -23,6 +23,10 @@ export type PlatformUser = {
 /* ---- per-VA branding & customization ---- */
 export type BgType = "solid" | "gradient" | "image";
 
+export type Density = "compact" | "cozy" | "spacious";
+export type ButtonShape = "soft" | "pill" | "sharp";
+export type HeaderStyle = "blur" | "solid" | "minimal";
+
 export type Branding = {
   logoUrl: string | null; // data URL or remote URL
   hue: number; // 0–360 primary brand hue, drives the whole palette
@@ -33,6 +37,12 @@ export type Branding = {
   radius: number; // px corner radius (0–24)
   bgType: BgType;
   bgValue: string; // color, "hueA|hueB" for gradient, or image URL
+  /* --- feel & layout (all optional; default in brandingToCss) --- */
+  density?: Density; // whitespace / padding scale
+  buttonShape?: ButtonShape; // button corner style
+  headerStyle?: HeaderStyle; // nav bar treatment
+  saturation?: number; // 35–85 colour intensity of the palette
+  flat?: boolean; // remove card shadows for a flat, minimal look
 };
 
 export type NavItem = {
