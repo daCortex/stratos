@@ -67,6 +67,9 @@ export function buildSeed(): DB {
   const owner: PlatformUser = { id: nextId(), ifcUsername: "demo", displayName: "Alex Rivera", passwordHash: hashSecret("demo"), avatar: null, createdAt: now };
   db.users.push(owner);
 
+  // Platform super-admin (controls every account & VA). Temp password — change it after first login.
+  db.users.push({ id: nextId(), ifcUsername: "AviatorChina", displayName: "AviatorChina", passwordHash: hashSecret("stratos-admin"), avatar: null, createdAt: now, isAdmin: true });
+
   const org: Org = {
     id: nextId(), slug: "skyline", name: "Skyline Virtual", callsignPrefix: "SKY",
     ownerUserId: owner.id, joinCode: "SKYLINE", createdAt: now,

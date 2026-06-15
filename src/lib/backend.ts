@@ -152,6 +152,12 @@ export async function upsertAppForm(form: ApplicationForm): Promise<void> {
   if (i >= 0) db.appForms[i] = form; else db.appForms.push(form);
 }
 
+export async function deleteAppForm(orgId: number): Promise<void> {
+  if (sql) { await ensureReady(); await sql.query(`delete from app_forms where org_id = $1`, [orgId]); return; }
+  const db = mem();
+  db.appForms = db.appForms.filter((f) => f.orgId !== orgId);
+}
+
 /* bulk: mark a member's notifications read */
 export async function markNotifsRead(membershipId: number): Promise<void> {
   if (sql) { await ensureReady(); await sql.query(`update "notifications" set data = data || '{"read":true}'::jsonb where data->>'membershipId' = $1`, [String(membershipId)]); return; }

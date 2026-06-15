@@ -54,10 +54,30 @@ export async function currentUser(): Promise<PlatformUser | null> {
   return getUserById(payload.uid);
 }
 
-/* Resolve the signed-in user's role within a specific VA. */
+/* Platform super-admins. The "AviatorChina" account is an admin out of the box;
+   extend via the PLATFORM_ADMINS env var (comma-separated IFC usernames). */
+const ADMIN_ALLOWLIST = new Set(
+  ["aviatorchina", ...(process.env.PLATFORM_ADMINS || "").split(",")]
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+export function isPlatformAdmin(user: PlatformUser | null): boolean {
+  if (!user) return false;
+  return user.isAdmin === true || ADMIN_ALLOWLIST.has(user.ifcUsername.toLowerCase());
+}
+
+export async function requireAdmin(): Promise<PlatformUser | null> {
+  const user = await currentUser();
+  return isPlatformAdmin(user) ? user : null;
+}
+
+/* Resolve the signed-in user's role within a specific VA.
+   Platform admins implicitly own and manage every VA. */
 export async function orgRole(org: Org, user: PlatformUser | null): Promise<{ membership: Membership | null; canManage: boolean; isOwner: boolean }> {
   if (!user) return { membership: null, canManage: false, isOwner: false };
   const m = await getMembership(org.id, user.id);
+  if (isPlatformAdmin(user)) return { membership: m, canManage: true, isOwner: true };
   const isOwner = !!m && (m.role === "owner" || org.ownerUserId === user.id);
   const canManage = !!m && (m.role === "owner" || m.role === "staff");
   return { membership: m, canManage, isOwner };

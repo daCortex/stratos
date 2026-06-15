@@ -35,6 +35,14 @@ export async function createUser(ifcUsername: string, displayName: string, passw
 export async function updateUser(id: number, patch: Partial<PlatformUser>): Promise<void> {
   await b.patch("users", id, patch);
 }
+export async function listAllUsers(): Promise<PlatformUser[]> {
+  return (await b.all<PlatformUser>("users")).sort((a, c) => c.createdAt.localeCompare(a.createdAt));
+}
+/* Platform-admin: delete a user and detach them from every VA. */
+export async function deleteUser(id: number): Promise<void> {
+  await b.removeWhere("members", "userId", id);
+  await b.remove("users", id);
+}
 
 /* ---------- Orgs ---------- */
 export async function getOrgBySlug(slug: string): Promise<Org | null> {
@@ -77,6 +85,35 @@ export async function createOrg(input: {
 }
 export async function updateOrg(id: number, patch: Partial<Org>): Promise<void> {
   await b.patch("orgs", id, patch);
+}
+/* Platform-admin: permanently delete a VA and everything scoped to it. */
+export async function deleteOrg(id: number): Promise<void> {
+  const scoped = [
+    "members", "pireps", "news", "loas", "reports", "invites", "routes", "events", "awards",
+    "earned", "notams", "challenges", "challengeProgress", "points", "shop", "redemptions",
+    "notifications", "applications",
+  ] as const;
+  for (const c of scoped) await b.removeWhere(c, "orgId", id);
+  await b.deleteAppForm(id);
+  await b.remove("orgs", id);
+}
+/* Platform-admin: hand a VA to another user (becomes owner-member). */
+export async function transferOrgOwner(orgId: number, newOwnerUserId: number): Promise<void> {
+  const org = await getOrgById(orgId);
+  if (!org) return;
+  await b.patch("orgs", orgId, { ownerUserId: newOwnerUserId });
+  const existing = await getMembership(orgId, newOwnerUserId);
+  if (existing) await b.patch("members", existing.id, { role: "owner", status: "active" });
+  else {
+    const u = await getUserById(newOwnerUserId);
+    await createMembership({ orgId, userId: newOwnerUserId, role: "owner", callsign: `${org.callsignPrefix}001`, status: "active", ifUsername: u?.ifcUsername ?? null });
+  }
+}
+/* Platform-admin: quick counts for a VA. */
+export async function orgCounts(orgId: number): Promise<{ members: number; pireps: number }> {
+  const members = (await b.byOrg("members", orgId)).length;
+  const pireps = (await b.byOrg("pireps", orgId)).length;
+  return { members, pireps };
 }
 
 /* ---------- Memberships ---------- */

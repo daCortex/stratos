@@ -18,6 +18,7 @@ export type PlatformUser = {
   passwordHash: string | null; // scrypt salt:hash; null until they set one
   avatar: string | null;
   createdAt: string;
+  isAdmin?: boolean; // platform super-admin (controls every account & VA)
 };
 
 /* ---- per-VA branding & customization ---- */
