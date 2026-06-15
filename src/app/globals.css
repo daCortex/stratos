@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* ----------------------------------------------------------------
+   Stratos design tokens. Defaults below paint the platform shell
+   (marketing, dashboard). Inside a VA, the org's branding overrides
+   these same variables inline, so every component repaints to their
+   colors / font / radius with no extra work.
+------------------------------------------------------------------- */
+:root {
+  /* Stratos platform brand — Abyssal Navy / Champagne Gold / Ivory, set in Jost. */
+  --bg: #0D1B2A;            /* Abyssal Navy */
+  --page-bg: #0D1B2A;
+  --surface: #122438;
+  --surface-2: #1a3047;
+  --border: #2a3e52;       /* Graphite-ish */
+  --text: #F4F1EB;         /* Ivory Cloud */
+  --text-dim: #b9c2cc;
+  --text-faint: #7c8a99;
+  --primary: #C9A84C;      /* Champagne Gold */
+  --primary-soft: #a98e3c;
+  --accent: #D4D8DC;       /* Platinum */
+  --on-primary: #0D1B2A;
+  --radius: 14px;
+  --font-body: 'Jost', system-ui, sans-serif;
+  --font-head: 'Jost', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body { padding: 0; margin: 0; }
+
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, .head { font-family: var(--font-head); font-weight: 600; letter-spacing: -0.01em; }
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--primary); color: var(--on-primary); }
+
+/* ---- reusable primitives ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.card-2 { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.6rem 1.1rem; border-radius: calc(var(--radius) - 4px);
+  font-weight: 600; font-size: 0.9rem; cursor: pointer;
+  border: 1px solid transparent; transition: transform .12s ease, opacity .12s ease, background .12s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { opacity: .9; }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-sm { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+
+.input, select.input, textarea.input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px); color: var(--text);
+  padding: 0.6rem 0.8rem; font-size: 0.9rem; font-family: var(--font-body);
+}
+.input:focus { outline: none; border-color: var(--primary); }
+.label { display: block; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.3rem; font-weight: 500; }
+
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
+.muted { color: var(--text-dim); }
+.faint { color: var(--text-faint); }
+.pill { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 600; border: 1px solid var(--border); }
+
+.gradient-text {
+  background: linear-gradient(100deg, var(--primary), var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.hairline { border-top: 1px solid var(--border); }
+
+table.data { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+table.data th { text-align: left; color: var(--text-faint); font-weight: 600; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+table.data td { padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--border); }
+table.data tr:last-child td { border-bottom: none; }
+
+.reveal { animation: rise .5s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.container-x { max-width: 1180px; margin: 0 auto; padding-left: 1.25rem; padding-right: 1.25rem; }
+
+@media (max-width: 880px) {
+  .studio-grid, .pilot-grid, .news-grid { grid-template-columns: 1fr !important; }
+  .studio-grid > div:last-child { position: static !important; }
+}
+.va-nav::-webkit-scrollbar { height: 0; }
