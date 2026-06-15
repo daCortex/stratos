@@ -1,102 +1,61 @@
--- Stratos — Neon Postgres schema. Mirrors the in-memory shapes in src/lib/types.ts 1:1.
--- JSON-shaped config (branding, nav, hubs, fleet, ranks, multipliers, settings) is stored
--- as jsonb on the org row so the customization studio can save the whole config atomically.
+-- Stratos — Neon Postgres schema.
+--
+-- You do NOT normally need to run this by hand: src/lib/backend.ts creates these
+-- objects automatically (CREATE ... IF NOT EXISTS) the first time the app connects
+-- with DATABASE_URL set, and seeds the demo VA once via an atomic claim row.
+-- This file documents the shape and lets you provision a database up front if you prefer.
+--
+-- Design: one table per entity, each row = (id bigint pk, org_id bigint, data jsonb).
+-- The full object lives in `data`; `id`/`org_id` are mirrored as columns for fast lookups.
+-- Per-entity rows mean concurrent writes to different records never clobber each other.
+-- All numeric ids come from a single shared sequence so they're globally unique.
 
-create table if not exists users (
-  id            serial primary key,
-  ifc_username  text unique not null,
-  display_name  text not null,
-  password_hash text,
-  avatar        text,
-  created_at    timestamptz not null default now()
-);
+create sequence if not exists stratos_seq;
 
-create table if not exists orgs (
-  id              serial primary key,
-  slug            text unique not null,
-  name            text not null,
-  callsign_prefix text not null,
-  owner_user_id   integer not null references users(id),
-  join_code       text not null,
-  created_at      timestamptz not null default now(),
-  branding        jsonb not null,
-  nav             jsonb not null,
-  hubs            jsonb not null,
-  fleet           jsonb not null,
-  ranks           jsonb not null,
-  multipliers     jsonb not null,
-  settings        jsonb not null
-);
+-- Entity tables (same structure for every collection).
+create table if not exists users              (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists orgs               (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists members            (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists pireps             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists news               (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists loas               (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists reports            (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists invites            (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists routes             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists events             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists awards             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists earned             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists notams             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists challenges         (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists "challengeProgress"(id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists points             (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists shop               (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists redemptions        (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists notifications      (id bigint primary key, org_id bigint, data jsonb not null);
+create table if not exists applications       (id bigint primary key, org_id bigint, data jsonb not null);
 
-create table if not exists memberships (
-  id           serial primary key,
-  org_id       integer not null references orgs(id) on delete cascade,
-  user_id      integer not null references users(id) on delete cascade,
-  role         text not null default 'pilot',           -- owner | staff | pilot
-  callsign     text not null,
-  status       text not null default 'active',          -- pending | active | suspended
-  rank_label   text,
-  base_minutes integer not null default 0,
-  base_pireps  integer not null default 0,
-  if_username  text,
-  joined_at    timestamptz not null default now(),
-  warnings     jsonb not null default '[]',
-  unique (org_id, user_id)
-);
+-- Application forms are keyed by org (one per VA), no numeric id.
+create table if not exists app_forms (org_id bigint primary key, data jsonb not null);
 
-create table if not exists pireps (
-  id              serial primary key,
-  org_id          integer not null references orgs(id) on delete cascade,
-  membership_id   integer not null references memberships(id) on delete cascade,
-  flight_no       text, dep text, arr text, aircraft text,
-  minutes         integer not null default 0,
-  raw_minutes     integer not null default 0,
-  multiplier      real not null default 1,
-  multiplier_code text,
-  fuel_kg         integer, landing_rate integer, server text, remarks text,
-  status          text not null default 'pending',      -- pending | approved | rejected
-  filed_at        timestamptz not null default now(),
-  reviewed_at     timestamptz, reviewer text
-);
+-- Seed-claim marker so only one instance seeds a fresh database.
+create table if not exists _meta (k text primary key);
 
-create table if not exists news (
-  id         serial primary key,
-  org_id     integer not null references orgs(id) on delete cascade,
-  title text, body text, category text, image_url text, author text,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists loas (
-  id            serial primary key,
-  org_id        integer not null references orgs(id) on delete cascade,
-  membership_id integer not null references memberships(id) on delete cascade,
-  reason text, days integer not null default 0,
-  status text not null default 'pending',                -- pending | active | rejected | ended
-  start_at timestamptz, end_at timestamptz, resolver text,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists reports (
-  id        serial primary key,
-  org_id    integer not null references orgs(id) on delete cascade,
-  category text, target text, message text, reporter_name text,
-  status text not null default 'open',                   -- open | resolved | dismissed
-  resolver text, created_at timestamptz not null default now()
-);
-
-create table if not exists invites (
-  id            serial primary key,
-  org_id        integer not null references orgs(id) on delete cascade,
-  code          text unique not null,
-  kind          text not null default 'single',          -- multi | single
-  ifc_username  text,
-  created_by    text,
-  used_by_user_id integer references users(id),
-  created_at    timestamptz not null default now(),
-  expires_at    timestamptz
-);
-
-create index if not exists idx_members_org on memberships(org_id);
-create index if not exists idx_pireps_org on pireps(org_id);
-create index if not exists idx_pireps_member on pireps(membership_id);
-create index if not exists idx_news_org on news(org_id);
+-- org_id indexes for the per-VA lookups the app does constantly.
+create index if not exists members_org_idx            on members (org_id);
+create index if not exists pireps_org_idx             on pireps (org_id);
+create index if not exists news_org_idx               on news (org_id);
+create index if not exists loas_org_idx               on loas (org_id);
+create index if not exists reports_org_idx            on reports (org_id);
+create index if not exists invites_org_idx            on invites (org_id);
+create index if not exists routes_org_idx             on routes (org_id);
+create index if not exists events_org_idx             on events (org_id);
+create index if not exists awards_org_idx             on awards (org_id);
+create index if not exists earned_org_idx             on earned (org_id);
+create index if not exists notams_org_idx             on notams (org_id);
+create index if not exists challenges_org_idx         on challenges (org_id);
+create index if not exists "challengeProgress_org_idx" on "challengeProgress" (org_id);
+create index if not exists points_org_idx             on points (org_id);
+create index if not exists shop_org_idx               on shop (org_id);
+create index if not exists redemptions_org_idx        on redemptions (org_id);
+create index if not exists notifications_org_idx      on notifications (org_id);
+create index if not exists applications_org_idx       on applications (org_id);
