@@ -48,15 +48,17 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 22, alignItems: "start" }} className="studio-grid">
-      {/* ---- editor ---- */}
-      <div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
-          {TABS.map((t) => (
-            <button key={t} onClick={() => setTab(t)} className="btn btn-sm" style={{ background: tab === t ? "var(--primary)" : "transparent", color: tab === t ? "var(--on-primary)" : "var(--text)", border: "1px solid var(--border)" }}>{t}</button>
-          ))}
-        </div>
+    <div className="studio-shell">
+      <aside className="studio-sidebar">
+        <div className="eyebrow" style={{ padding: "0 0.5rem 0.5rem", color: "var(--text-faint)" }}>Customize</div>
+        {TABS.map((t) => (
+          <button key={t} onClick={() => setTab(t)} className="studio-tab" data-active={tab === t}>{t}</button>
+        ))}
+      </aside>
 
+      <div className="studio-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 22, alignItems: "start", flex: 1, minWidth: 0 }}>
+        {/* ---- editor ---- */}
+        <div>
         {tab === "Brand" && (
           <Panel>
             <Field label="Logo">
@@ -314,6 +316,7 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
           </div>
         </div>
         <p className="faint" style={{ fontSize: "0.78rem", marginTop: 10 }}>This is exactly how pilots will see {cfg.name}. Save to publish.</p>
+      </div>
       </div>
     </div>
   );
