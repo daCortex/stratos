@@ -16,7 +16,27 @@ import type { ApplicationForm } from "./types";
    each other (unlike a whole-state snapshot).
 ------------------------------------------------------------------- */
 
-export const dbConfigured = !!process.env.DATABASE_URL;
+/* Resolve the Postgres connection string. Accepts the standard DATABASE_URL,
+   this project's custom name, the names Vercel's Neon/Postgres integrations
+   inject, and — as a last resort — any env var that looks like a postgres URL.
+   So it "just works" however the variable ended up named. */
+function resolveDatabaseUrl(): string | undefined {
+  const preferred = [
+    "DATABASE_URL", "stratos_Database_URL", "STRATOS_DATABASE_URL", "stratos_DATABASE_URL",
+    "POSTGRES_URL", "DATABASE_URL_UNPOOLED", "POSTGRES_URL_NON_POOLING", "POSTGRES_PRISMA_URL",
+  ];
+  for (const k of preferred) {
+    const v = process.env[k];
+    if (v && /^postgres(ql)?:\/\//.test(v)) return v;
+  }
+  for (const [k, v] of Object.entries(process.env)) {
+    if (v && /(database|postgres).*url/i.test(k) && /^postgres(ql)?:\/\//.test(v)) return v;
+  }
+  return undefined;
+}
+
+const DATABASE_URL = resolveDatabaseUrl();
+export const dbConfigured = !!DATABASE_URL;
 
 /* ---------------- in-memory backend ---------------- */
 const g = globalThis as unknown as { __stratos?: DB };
@@ -30,7 +50,7 @@ function mem(): DB {
 
 /* ---------------- postgres backend ---------------- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sql: any = dbConfigured ? neon(process.env.DATABASE_URL!) : null;
+const sql: any = DATABASE_URL ? neon(DATABASE_URL) : null;
 
 let initPromise: Promise<void> | null = null;
 function ensureReady(): Promise<void> {
