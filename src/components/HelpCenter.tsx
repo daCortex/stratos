@@ -114,6 +114,7 @@ const TOPICS: Topic[] = [
       { h: "Can one pilot fly for multiple VAs?", p: "Yes. One IFC account joins any number of VAs and files for each separately." },
       { h: "Does it connect to Infinite Flight automatically?", p: "PIREPs are filed by pilots. SimBrief flight plans and Discord webhooks integrate out of the box; a live IF API key is optional for future live tracking." },
       { h: "How do I move my old VA in?", p: "Customize the look, then CSV-import your roster and PIREP history. Most VAs are fully migrated in under an hour." },
+      { h: "Where do I get support?", p: "Join our Discord — it's the community and support hub for everything Stratos. Link: discord.gg/f4rhKFa6MD (also at the top of this page and in the footer)." },
     ],
   },
 ];

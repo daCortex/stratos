@@ -1,6 +1,7 @@
 import PlatformHeader from "@/components/PlatformHeader";
 import { currentUser, isPlatformAdmin } from "@/lib/auth";
 import { dbHealthy, listIncidents } from "@/lib/store";
+import { DISCORD_URL } from "@/lib/site";
 import { postIncidentAction, resolveIncidentAction, deleteIncidentAction } from "./actions";
 import type { Incident } from "@/lib/types";
 
@@ -59,7 +60,7 @@ export default async function StatusPage() {
             </div>
           ))}
         </div>
-        <p className="faint" style={{ fontSize: "0.78rem", marginTop: 8 }}>Database: {components[1].note}</p>
+        <p className="faint" style={{ fontSize: "0.78rem", marginTop: 8 }}>Database: {components[1].note} · Seeing a problem? <a href={DISCORD_URL} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>Report it on Discord</a></p>
 
         {/* active incidents */}
         {active.length > 0 && (

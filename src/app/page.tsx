@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PlatformHeader from "@/components/PlatformHeader";
 import { listAllOrgs, listMembers } from "@/lib/store";
+import { DISCORD_URL } from "@/lib/site";
 
 export default async function Home() {
   const orgs = await listAllOrgs();
@@ -77,9 +78,10 @@ export default async function Home() {
         <footer className="hairline">
           <div className="container-x" style={{ padding: "2rem 1.25rem", fontSize: "0.85rem", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
             <span className="faint">Stratos — crew centers for virtual airlines.</span>
-            <div style={{ display: "flex", gap: 18 }}>
+            <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
               <Link href="/help" className="muted">Help &amp; guides</Link>
               <Link href="/status" className="muted">Status</Link>
+              <a href={DISCORD_URL} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>Discord</a>
               <Link href="/explore" className="muted">Explore</Link>
               <span className="faint">Not affiliated with Infinite Flight.</span>
             </div>
