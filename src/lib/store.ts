@@ -51,6 +51,11 @@ export async function getOrgBySlug(slug: string): Promise<Org | null> {
 export async function getOrgById(id: number): Promise<Org | null> {
   return b.byId<Org>("orgs", id);
 }
+export async function getOrgByDomain(host: string): Promise<Org | null> {
+  const norm = host.trim().toLowerCase().replace(/^www\./, "");
+  if (!norm) return null;
+  return (await b.all<Org>("orgs")).find((o) => (o.customDomain || "").toLowerCase().replace(/^www\./, "") === norm) || null;
+}
 export async function listAllOrgs(): Promise<Org[]> {
   return (await b.all<Org>("orgs")).sort((a, c) => a.name.localeCompare(c.name));
 }

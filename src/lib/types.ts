@@ -128,6 +128,7 @@ export type Org = {
   multipliers: Multiplier[];
   settings: OrgSettings;
   codeshares: Codeshare[];
+  customDomain?: string | null; // e.g. "flyskyline.com" — served white-labeled
 };
 
 export type Warning = { reason: string; at: string };

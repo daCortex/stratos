@@ -27,6 +27,10 @@ export async function saveOrgConfigAction(slug: string, formData: FormData) {
   if (Array.isArray(cfg.multipliers)) patch.multipliers = cfg.multipliers as Multiplier[];
   if (cfg.settings) patch.settings = cfg.settings as OrgSettings;
   if (Array.isArray(cfg.codeshares)) patch.codeshares = cfg.codeshares;
+  if (typeof cfg.customDomain === "string" || cfg.customDomain === null) {
+    const d = (cfg.customDomain || "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "");
+    patch.customDomain = d || null;
+  }
 
   await updateOrg(org!.id, patch);
   revalidatePath(`/va/${slug}`, "layout");

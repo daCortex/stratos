@@ -8,10 +8,10 @@ import { saveOrgConfigAction } from "@/app/va/[slug]/settings/actions";
 type Cfg = {
   name: string; callsignPrefix: string; branding: Branding;
   nav: NavItem[]; hubs: Hub[]; fleet: Aircraft[]; ranks: Rank[]; multipliers: Multiplier[];
-  settings: Org["settings"]; codeshares: Codeshare[];
+  settings: Org["settings"]; codeshares: Codeshare[]; customDomain: string;
 };
 
-const TABS = ["Brand", "Feel", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "Modules", "General", "Data"] as const;
+const TABS = ["Brand", "Feel", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "Modules", "Domain", "General", "Data"] as const;
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function SettingsStudio({ org, saved }: { org: Org; saved?: boolean }) {
@@ -23,6 +23,7 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
     fleet: org.fleet.map((f) => ({ ...f })), ranks: org.ranks.map((r) => ({ ...r })),
     multipliers: org.multipliers.map((m) => ({ ...m })), settings: { ...org.settings, modules: orgModules(org.settings) },
     codeshares: (org.codeshares || []).map((c) => ({ ...c })),
+    customDomain: org.customDomain || "",
   }));
   const setS = (p: Partial<Org["settings"]>) => setCfg((c) => ({ ...c, settings: { ...c.settings, ...p } }));
 
@@ -261,6 +262,35 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
             <ModuleToggle label="Live flight map" desc="Real-time map of your pilots airborne on Infinite Flight. Adds a Live page to your menu." v={!!cfg.settings.modules?.liveMap} set={(v) => setS({ modules: { ...orgModules(cfg.settings), liveMap: v } })} />
             <ModuleToggle label="Infinite Flight verification" desc="Pilots prove they own their IFC account and pull their real grade & hours — trustworthy data, no cheating." v={!!cfg.settings.modules?.ifVerify} set={(v) => setS({ modules: { ...orgModules(cfg.settings), ifVerify: v } })} />
             <ModuleToggle label="Analytics dashboard" desc="Charts and trends for owners — flights per month, growth, top routes and pilots. Adds an Analytics tab to your crew center." v={!!cfg.settings.modules?.analytics} set={(v) => setS({ modules: { ...orgModules(cfg.settings), analytics: v } })} />
+          </Panel>
+        )}
+
+        {tab === "Domain" && (
+          <Panel>
+            <h3 style={{ margin: 0 }}>Custom domain</h3>
+            <p className="faint" style={{ fontSize: "0.86rem", marginTop: 0 }}>Point your own domain at your crew center. Pilots visit your domain and never see Stratos — it&apos;s your website.</p>
+            <Field label="Your domain">
+              <input className="input" value={cfg.customDomain} onChange={(e) => setCfg((c) => ({ ...c, customDomain: e.target.value }))} placeholder="flyyourva.com  or  crew.flyyourva.com" />
+            </Field>
+            {cfg.customDomain.trim() && (
+              <div className="card-2" style={{ padding: "1rem 1.1rem", fontSize: "0.86rem" }}>
+                <b>Then add this DNS record at your registrar:</b>
+                {cfg.customDomain.split(".").length > 2 ? (
+                  <div style={{ marginTop: 8, fontFamily: "var(--font-body)" }}>
+                    <div><span className="faint">Type</span> &nbsp;<b>CNAME</b></div>
+                    <div><span className="faint">Name</span> &nbsp;<b>{cfg.customDomain.split(".")[0]}</b></div>
+                    <div><span className="faint">Value</span> &nbsp;<b>cname.vercel-dns.com</b></div>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 8 }}>
+                    <div><span className="faint">Type</span> &nbsp;<b>A</b></div>
+                    <div><span className="faint">Name</span> &nbsp;<b>@</b></div>
+                    <div><span className="faint">Value</span> &nbsp;<b>76.76.21.21</b></div>
+                  </div>
+                )}
+                <p className="faint" style={{ fontSize: "0.78rem", marginTop: 10, marginBottom: 0 }}>Save below, then add the record. SSL is issued automatically once DNS resolves (usually a few minutes). Domain registration with the host may require the platform admin to enable it.</p>
+              </div>
+            )}
           </Panel>
         )}
 

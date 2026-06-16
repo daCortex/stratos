@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { getOrgBySlug } from "@/lib/store";
 import { brandingToCss, googleFontHref } from "@/lib/theme";
 import VAHeader from "@/components/VAHeader";
@@ -18,6 +19,10 @@ export default async function VALayout({ children, params }: { children: React.R
   const vars = brandingToCss(org!.branding);
   const fontHref = googleFontHref([org!.branding.font, org!.branding.headingFont]);
 
+  // White-label: when served on the VA's own custom domain, drop platform branding.
+  const host = (await headers()).get("host")?.split(":")[0].toLowerCase().replace(/^www\./, "") || "";
+  const onCustomDomain = !!org!.customDomain && host === org!.customDomain.toLowerCase().replace(/^www\./, "");
+
   return (
     <>
       {fontHref && <link rel="stylesheet" href={fontHref} />}
@@ -27,10 +32,12 @@ export default async function VALayout({ children, params }: { children: React.R
         <footer className="hairline" style={{ marginTop: 40 }}>
           <div className="container-x faint" style={{ padding: "2rem 1.25rem", fontSize: "0.8rem", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
             <span>© {org!.name}</span>
-            <span style={{ display: "flex", gap: 14, alignItems: "center" }}>
-              <a href={DISCORD_URL} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>Discord</a>
-              <span style={{ opacity: 0.7 }}>Powered quietly by Stratos</span>
-            </span>
+            {!onCustomDomain && (
+              <span style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                <a href={DISCORD_URL} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>Discord</a>
+                <span style={{ opacity: 0.7 }}>Powered quietly by Stratos</span>
+              </span>
+            )}
           </div>
         </footer>
       </div>
