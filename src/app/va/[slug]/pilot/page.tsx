@@ -5,13 +5,15 @@ import {
   listAwards, listNotifications, listChallenges, challengeProgressFor, listRoutes,
 } from "@/lib/store";
 import { currentUser } from "@/lib/auth";
+import { orgModules } from "@/lib/theme";
 import { rankForHours, nextRank, rankProgress } from "@/lib/ranks";
+import { gradeLabel } from "@/lib/infiniteflight";
 import FilePirepForm from "@/components/FilePirepForm";
-import { markReadAction } from "./actions";
+import { markReadAction, verifyIfAction } from "./actions";
 
-export default async function PilotHub({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ filed?: string }> }) {
+export default async function PilotHub({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ filed?: string; verified?: string; verifyfail?: string }> }) {
   const { slug } = await params;
-  const { filed } = await searchParams;
+  const { filed, verified, verifyfail } = await searchParams;
   const org = (await getOrgBySlug(slug))!;
   const base = `/va/${org.slug}`;
   const user = await currentUser();
@@ -67,6 +69,28 @@ export default async function PilotHub({ params, searchParams }: { params: Promi
       </div>
 
       {filed && <p className="pill" style={{ color: "var(--primary)", borderColor: "var(--primary)", marginTop: 14 }}>✓ PIREP filed.</p>}
+      {verified && <p className="pill" style={{ color: "var(--primary)", borderColor: "var(--primary)", marginTop: 14 }}>✓ Infinite Flight account verified.</p>}
+      {verifyfail && <p className="pill" style={{ color: "#e0556a", borderColor: "#e0556a", marginTop: 14 }}>Couldn&apos;t verify — check your IFC username, or IF verification isn&apos;t configured yet.</p>}
+
+      {orgModules(org.settings).ifVerify && (
+        <div className="card" style={{ padding: "1rem 1.2rem", marginTop: 14, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", borderColor: m!.ifVerified ? "var(--primary)" : "var(--border)" }}>
+          <span style={{ fontSize: "1.6rem" }}>{m!.ifVerified ? "✅" : "🛫"}</span>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            {m!.ifVerified ? (
+              <>
+                <div style={{ fontWeight: 600 }}>Verified on Infinite Flight · {gradeLabel(m!.ifGrade ?? 0)}</div>
+                <div className="faint" style={{ fontSize: "0.84rem" }}>{Math.floor((m!.ifMinutes ?? 0) / 60).toLocaleString()} real IF hours · {(m!.ifLandings ?? 0).toLocaleString()} landings</div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontWeight: 600 }}>Verify your Infinite Flight account</div>
+                <div className="faint" style={{ fontSize: "0.84rem" }}>Prove you own @{m!.ifUsername || user!.ifcUsername} and pull your real grade &amp; hours.</div>
+              </>
+            )}
+          </div>
+          {!m!.ifVerified && <form action={verifyIfAction.bind(null, slug)}><button className="btn btn-primary btn-sm" type="submit">Verify now</button></form>}
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginTop: 18 }}>
         {cards.map(([v, l], i) => (

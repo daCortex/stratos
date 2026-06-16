@@ -1,4 +1,4 @@
-import type { Branding, NavItem, Rank, Multiplier, Hub, Aircraft, OrgSettings, Codeshare } from "./types";
+import type { Branding, NavItem, Rank, Multiplier, Hub, Aircraft, OrgSettings, Codeshare, OrgModules } from "./types";
 
 /* ----------------------------------------------------------------
    Theme engine. A VA's Branding compiles to CSS custom properties that
@@ -197,5 +197,12 @@ export function defaultSettings(name: string): OrgSettings {
     discordWebhook: "",
     simbrief: true,
     currency: "miles",
+    modules: { liveMap: false, analytics: false, ifVerify: false },
   };
+}
+
+/* Safe accessor — older orgs persisted before modules existed return all-off. */
+export function orgModules(settings: { modules?: Partial<OrgModules> }): OrgModules {
+  const m = settings?.modules || {};
+  return { liveMap: !!m.liveMap, analytics: !!m.analytics, ifVerify: !!m.ifVerify };
 }

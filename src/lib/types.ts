@@ -99,6 +99,15 @@ export type OrgSettings = {
   discordWebhook: string; // Discord webhook fired on PIREP/events
   simbrief: boolean; // show SimBrief briefing links
   currency: string; // name of the points currency, e.g. "miles"
+  modules: OrgModules; // opt-in Tier-2 features
+};
+
+/* Optional modules a VA can switch on. Default off — they light up extra
+   nav items and pages only when enabled. */
+export type OrgModules = {
+  liveMap: boolean; // real-time Infinite Flight tracking of the VA's pilots
+  analytics: boolean; // owner analytics dashboard (charts & trends)
+  ifVerify: boolean; // require/offer Infinite Flight identity verification
 };
 
 export type Codeshare = { id: string; name: string; logoUrl: string | null };
@@ -137,6 +146,12 @@ export type Membership = {
   ifUsername: string | null;
   joinedAt: string;
   warnings: Warning[];
+  /* --- Infinite Flight verification (set when the pilot verifies) --- */
+  ifVerified?: boolean;
+  ifGrade?: number;
+  ifMinutes?: number; // real total IF flight time at verification
+  ifLandings?: number;
+  ifVerifiedAt?: string;
 };
 
 export type Pirep = {

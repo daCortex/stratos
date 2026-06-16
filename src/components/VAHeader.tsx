@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Org } from "@/lib/types";
 import { currentUser, orgRole } from "@/lib/auth";
+import { orgModules } from "@/lib/theme";
 import VANav from "./VANav";
 
 export default async function VAHeader({ org }: { org: Org }) {
@@ -8,6 +9,7 @@ export default async function VAHeader({ org }: { org: Org }) {
   const { membership, canManage } = await orgRole(org, user);
   const base = `/va/${org.slug}`;
   const items = org.nav.filter((n) => n.enabled).map((n) => ({ key: n.key, label: n.label, href: n.href }));
+  if (orgModules(org.settings).liveMap) items.splice(1, 0, { key: "live", label: "Live", href: "/live" });
 
   return (
     <header className="site-header" style={{ position: "sticky" }}>

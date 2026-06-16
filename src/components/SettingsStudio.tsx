@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Org, Branding, NavItem, Hub, Aircraft, Rank, Multiplier, Codeshare } from "@/lib/types";
-import { brandingToCss, FONT_CATALOG, googleFontHref } from "@/lib/theme";
+import { brandingToCss, FONT_CATALOG, googleFontHref, orgModules } from "@/lib/theme";
 import { saveOrgConfigAction } from "@/app/va/[slug]/settings/actions";
 
 type Cfg = {
@@ -11,7 +11,7 @@ type Cfg = {
   settings: Org["settings"]; codeshares: Codeshare[];
 };
 
-const TABS = ["Brand", "Feel", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "General", "Data"] as const;
+const TABS = ["Brand", "Feel", "Background", "Menu", "Hubs", "Fleet", "Ranks", "Bonuses", "Engage", "Modules", "General", "Data"] as const;
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export default function SettingsStudio({ org, saved }: { org: Org; saved?: boolean }) {
@@ -21,7 +21,7 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
     branding: { density: "cozy", buttonShape: "soft", headerStyle: "blur", saturation: 60, flat: false, ...org.branding },
     nav: org.nav.map((n) => ({ ...n })), hubs: org.hubs.map((h) => ({ ...h })),
     fleet: org.fleet.map((f) => ({ ...f })), ranks: org.ranks.map((r) => ({ ...r })),
-    multipliers: org.multipliers.map((m) => ({ ...m })), settings: { ...org.settings },
+    multipliers: org.multipliers.map((m) => ({ ...m })), settings: { ...org.settings, modules: orgModules(org.settings) },
     codeshares: (org.codeshares || []).map((c) => ({ ...c })),
   }));
   const setS = (p: Partial<Org["settings"]>) => setCfg((c) => ({ ...c, settings: { ...c.settings, ...p } }));
@@ -255,6 +255,15 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
           </Panel>
         )}
 
+        {tab === "Modules" && (
+          <Panel>
+            <p className="faint" style={{ fontSize: "0.86rem", marginTop: 0 }}>Optional power features. Switch on what you want — each adds pages and tools without cluttering VAs that don't need them.</p>
+            <ModuleToggle label="Live flight map" desc="Real-time map of your pilots airborne on Infinite Flight. Adds a Live page to your menu." v={!!cfg.settings.modules?.liveMap} set={(v) => setS({ modules: { ...orgModules(cfg.settings), liveMap: v } })} />
+            <ModuleToggle label="Infinite Flight verification" desc="Pilots prove they own their IFC account and pull their real grade & hours — trustworthy data, no cheating." v={!!cfg.settings.modules?.ifVerify} set={(v) => setS({ modules: { ...orgModules(cfg.settings), ifVerify: v } })} />
+            <ModuleToggle label="Analytics dashboard" desc="Charts and trends for owners — flights per month, growth, top routes and pilots. Adds an Analytics tab to your crew center." v={!!cfg.settings.modules?.analytics} set={(v) => setS({ modules: { ...orgModules(cfg.settings), analytics: v } })} />
+          </Panel>
+        )}
+
         {tab === "General" && (
           <Panel>
             <Field label="Airline name"><input className="input" value={cfg.name} onChange={(e) => setCfg((c) => ({ ...c, name: e.target.value }))} /></Field>
@@ -324,6 +333,19 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
 
 function Panel({ children }: { children: React.ReactNode }) {
   return <div className="card" style={{ padding: "1.3rem", display: "grid", gap: 14 }}>{children}</div>;
+}
+function ModuleToggle({ label, desc, v, set }: { label: string; desc: string; v: boolean; set: (v: boolean) => void }) {
+  return (
+    <button type="button" onClick={() => set(!v)} className="card-2" style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "0.9rem 1rem", textAlign: "left", cursor: "pointer", border: v ? "1px solid var(--primary)" : "1px solid var(--border)", background: v ? "color-mix(in srgb, var(--primary) 10%, transparent)" : "var(--surface-2)" }}>
+      <span style={{ width: 38, height: 22, borderRadius: 99, background: v ? "var(--primary)" : "var(--surface)", border: "1px solid var(--border)", position: "relative", flexShrink: 0, marginTop: 2 }}>
+        <span style={{ position: "absolute", top: 2, left: v ? 18 : 2, width: 16, height: 16, borderRadius: 99, background: v ? "var(--on-primary)" : "var(--text-faint)", transition: "left .15s" }} />
+      </span>
+      <span>
+        <span style={{ fontWeight: 600, display: "block" }}>{label}</span>
+        <span className="muted" style={{ fontSize: "0.82rem" }}>{desc}</span>
+      </span>
+    </button>
+  );
 }
 function Segmented({ value, options, onChange }: { value: string; options: [string, string][]; onChange: (v: string) => void }) {
   return (

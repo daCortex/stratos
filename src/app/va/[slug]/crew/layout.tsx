@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getOrgBySlug } from "@/lib/store";
 import { currentUser, orgRole } from "@/lib/auth";
+import { orgModules } from "@/lib/theme";
 import { DISCORD_URL } from "@/lib/site";
 
 export default async function CrewLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
@@ -18,6 +19,7 @@ export default async function CrewLayout({ children, params }: { children: React
     ["Dashboard", base],
     ["Roster", `${base}/pilots`],
     ["PIREPs", `${base}/pireps`],
+    ...(orgModules(org!.settings).analytics ? [["Analytics", `${base}/analytics`]] : []),
     ["Routes", `${base}/routes`],
     ["Events", `${base}/events`],
     ["Awards", `${base}/awards`],

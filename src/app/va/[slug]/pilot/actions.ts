@@ -23,6 +23,25 @@ export async function redeemAction(slug: string, formData: FormData) {
   redirect(`/va/${slug}/shop?${res.ok ? "redeemed=1" : "error=" + encodeURIComponent(res.error || "failed")}`);
 }
 
+export async function verifyIfAction(slug: string) {
+  const org = await getOrgBySlug(slug); if (!org) return;
+  const user = await currentUser(); if (!user) redirect(`/login?next=/va/${slug}/pilot`);
+  const m = await getMembership(org!.id, user!.id); if (!m) redirect(`/va/${slug}/join`);
+  const ifc = m!.ifUsername || user!.ifcUsername;
+  const { lookupByIfc } = await import("@/lib/infiniteflight");
+  const { updateMembership } = await import("@/lib/store");
+  const stats = await lookupByIfc(ifc);
+  if (stats) {
+    await updateMembership(m!.id, {
+      ifVerified: true, ifGrade: stats.grade, ifMinutes: stats.flightTimeMinutes,
+      ifLandings: stats.landingCount, ifVerifiedAt: new Date().toISOString(),
+      ifUsername: m!.ifUsername || ifc,
+    });
+    redirect(`/va/${slug}/pilot?verified=1`);
+  }
+  redirect(`/va/${slug}/pilot?verifyfail=1`);
+}
+
 export async function markReadAction(slug: string) {
   const org = await getOrgBySlug(slug); if (!org) return;
   const user = await currentUser(); if (!user) return;
