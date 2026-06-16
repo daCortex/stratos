@@ -75,9 +75,14 @@ export default async function Home() {
         </section>
 
         <footer className="hairline">
-          <div className="container-x faint" style={{ padding: "2rem 1.25rem", fontSize: "0.82rem", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-            <span>Stratos — crew centers for virtual airlines.</span>
-            <span>Not affiliated with Infinite Flight.</span>
+          <div className="container-x" style={{ padding: "2rem 1.25rem", fontSize: "0.85rem", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+            <span className="faint">Stratos — crew centers for virtual airlines.</span>
+            <div style={{ display: "flex", gap: 18 }}>
+              <Link href="/help" className="muted">Help &amp; guides</Link>
+              <Link href="/status" className="muted">Status</Link>
+              <Link href="/explore" className="muted">Explore</Link>
+              <span className="faint">Not affiliated with Infinite Flight.</span>
+            </div>
           </div>
         </footer>
       </main>

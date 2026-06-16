@@ -1,7 +1,7 @@
 import type {
   PlatformUser, Org, Membership, Pirep, NewsPost, Loa, Report, Invite,
   Route, EventItem, Award, EarnedAward, Notam, Challenge, ChallengeProgress,
-  PointsEntry, ShopItem, Redemption, Notification, ApplicationForm, Application,
+  PointsEntry, ShopItem, Redemption, Notification, ApplicationForm, Application, Incident,
 } from "./types";
 import { defaultBranding, defaultNav, defaultRanks, defaultMultipliers, defaultHubs, defaultFleet, defaultSettings } from "./theme";
 import { hashSecret } from "./crypto";
@@ -30,6 +30,7 @@ export type DB = {
   notifications: Notification[];
   appForms: ApplicationForm[];
   applications: Application[];
+  incidents: Incident[];
   seq: number;
 };
 
@@ -37,7 +38,7 @@ export type DB = {
 export const COLLECTIONS = [
   "users", "orgs", "members", "pireps", "news", "loas", "reports", "invites",
   "routes", "events", "awards", "earned", "notams", "challenges", "challengeProgress",
-  "points", "shop", "redemptions", "notifications", "applications",
+  "points", "shop", "redemptions", "notifications", "applications", "incidents",
 ] as const;
 export type Collection = (typeof COLLECTIONS)[number];
 
@@ -52,7 +53,7 @@ export function emptyDB(): DB {
   return {
     users: [], orgs: [], members: [], pireps: [], news: [], loas: [], reports: [], invites: [],
     routes: [], events: [], awards: [], earned: [], notams: [], challenges: [], challengeProgress: [],
-    points: [], shop: [], redemptions: [], notifications: [], appForms: [], applications: [], seq: 0,
+    points: [], shop: [], redemptions: [], notifications: [], appForms: [], applications: [], incidents: [], seq: 0,
   };
 }
 

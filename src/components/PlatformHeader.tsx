@@ -14,7 +14,7 @@ export default async function PlatformHeader() {
         </Link>
         <nav style={{ display: "flex", alignItems: "center", gap: 18, fontSize: "0.9rem" }}>
           <Link href="/explore" className="muted">Explore VAs</Link>
-          <Link href="/join" className="muted">Join a VA</Link>
+          <Link href="/help" className="muted">Help</Link>
           {user ? (
             <>
               {admin && <Link href="/admin" className="btn btn-ghost btn-sm" style={{ borderColor: "var(--primary)", color: "var(--primary)" }}>Admin</Link>}

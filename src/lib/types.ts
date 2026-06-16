@@ -197,6 +197,18 @@ export type Report = {
   resolver: string | null;
 };
 
+/* ---- Status page incidents (platform-level, no org) ---- */
+export type IncidentImpact = "maintenance" | "minor" | "major" | "critical";
+export type Incident = {
+  id: number;
+  title: string;
+  body: string;
+  impact: IncidentImpact;
+  resolved: boolean;
+  at: string;
+  resolvedAt: string | null;
+};
+
 export type InviteKind = "multi" | "single";
 export type Invite = {
   id: number;

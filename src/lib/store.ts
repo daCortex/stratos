@@ -1,7 +1,7 @@
 import type {
   PlatformUser, Org, Membership, Pirep, NewsPost, Loa, Report, Invite, Role, MemberStatus,
   Route, EventItem, Award, EarnedAward, Notam, Challenge, ChallengeProgress,
-  PointsEntry, ShopItem, Redemption, Notification, ApplicationForm, Application,
+  PointsEntry, ShopItem, Redemption, Notification, ApplicationForm, Application, Incident,
 } from "./types";
 import {
   defaultBranding, defaultNav, defaultRanks, defaultMultipliers, defaultHubs, defaultFleet,
@@ -387,6 +387,30 @@ export async function createApplication(a: Omit<Application, "id" | "at" | "stat
 }
 export async function updateApplication(id: number, patch: Partial<Application>): Promise<void> {
   await b.patch("applications", id, patch);
+}
+
+/* ---------- Status page incidents ---------- */
+export async function listIncidents(): Promise<Incident[]> {
+  return (await b.all<Incident>("incidents")).sort((a, c) => c.at.localeCompare(a.at));
+}
+export async function createIncident(i: Omit<Incident, "id" | "at" | "resolved" | "resolvedAt">): Promise<Incident> {
+  return b.insert<Incident>("incidents", { ...i, id: undefined as unknown as number, resolved: false, resolvedAt: null, at: new Date().toISOString() });
+}
+export async function resolveIncident(id: number): Promise<void> {
+  await b.patch("incidents", id, { resolved: true, resolvedAt: new Date().toISOString() });
+}
+export async function deleteIncident(id: number): Promise<void> {
+  await b.remove("incidents", id);
+}
+
+/* Live DB health probe for the status page. Returns true if a read succeeds. */
+export async function dbHealthy(): Promise<{ ok: boolean; mode: "postgres" | "memory"; error: string | null }> {
+  try {
+    await b.all("orgs");
+    return { ok: true, mode: dbConfigured ? "postgres" : "memory", error: null };
+  } catch (e: unknown) {
+    return { ok: false, mode: dbConfigured ? "postgres" : "memory", error: e instanceof Error ? e.message : String(e) };
+  }
 }
 
 /* ---------- Engagement hook: run when a PIREP becomes approved ----------
