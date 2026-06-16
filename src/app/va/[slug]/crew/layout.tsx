@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getOrgBySlug } from "@/lib/store";
 import { currentUser, orgRole } from "@/lib/auth";
+import { DISCORD_URL } from "@/lib/site";
 
 export default async function CrewLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -34,7 +35,10 @@ export default async function CrewLayout({ children, params }: { children: React
     <main className="container-x" style={{ paddingTop: 32, paddingBottom: 80 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
         <div><span className="eyebrow" style={{ color: "var(--primary)" }}>Crew Center</span><h1 style={{ fontSize: "1.7rem", margin: "2px 0 0" }}>{org!.name}</h1></div>
-        {isOwner && <Link href={`/va/${slug}/settings`} className="btn btn-primary btn-sm">Customize site →</Link>}
+        <div style={{ display: "flex", gap: 8 }}>
+          <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">💬 Support</a>
+          {isOwner && <Link href={`/va/${slug}/settings`} className="btn btn-primary btn-sm">Customize site →</Link>}
+        </div>
       </div>
       <nav style={{ display: "flex", gap: 6, marginTop: 18, marginBottom: 24, flexWrap: "wrap", borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
         {tabs.map(([label, href]) => (

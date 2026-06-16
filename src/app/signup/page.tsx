@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PlatformHeader from "@/components/PlatformHeader";
 import { signupAction } from "@/app/actions";
+import { DISCORD_URL } from "@/lib/site";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
   const sp = await searchParams;
@@ -20,6 +21,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
           <button className="btn btn-primary" type="submit">Create account</button>
         </form>
         <p className="muted" style={{ marginTop: 16, fontSize: "0.9rem" }}>Already have one? <Link href="/login" style={{ color: "var(--primary)" }}>Sign in</Link></p>
+        <p className="faint" style={{ marginTop: 8, fontSize: "0.85rem" }}>Questions? <a href={DISCORD_URL} target="_blank" rel="noreferrer" style={{ color: "var(--primary)" }}>Join our Discord</a></p>
       </main>
     </>
   );
