@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { currentUser, isPlatformAdmin } from "@/lib/auth";
 import { logoutAction } from "@/app/actions";
+import { DISCORD_URL } from "@/lib/site";
 
 export default async function PlatformHeader() {
   const user = await currentUser();
@@ -15,6 +16,7 @@ export default async function PlatformHeader() {
         <nav style={{ display: "flex", alignItems: "center", gap: 18, fontSize: "0.9rem" }}>
           <Link href="/explore" className="muted">Explore VAs</Link>
           <Link href="/help" className="muted">Help</Link>
+          <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="muted">Discord</a>
           {user ? (
             <>
               {admin && <Link href="/admin" className="btn btn-ghost btn-sm" style={{ borderColor: "var(--primary)", color: "var(--primary)" }}>Admin</Link>}
