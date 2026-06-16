@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Org, Branding, NavItem, Hub, Aircraft, Rank, Multiplier, Codeshare } from "@/lib/types";
 import { brandingToCss, FONT_CATALOG, googleFontHref, orgModules } from "@/lib/theme";
-import { saveOrgConfigAction } from "@/app/va/[slug]/settings/actions";
+import { saveOrgConfigAction, verifyDomainAction } from "@/app/va/[slug]/settings/actions";
 
 type Cfg = {
   name: string; callsignPrefix: string; branding: Branding;
@@ -272,25 +272,37 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
             <Field label="Your domain">
               <input className="input" value={cfg.customDomain} onChange={(e) => setCfg((c) => ({ ...c, customDomain: e.target.value }))} placeholder="flyyourva.com  or  crew.flyyourva.com" />
             </Field>
-            {cfg.customDomain.trim() && (
-              <div className="card-2" style={{ padding: "1rem 1.1rem", fontSize: "0.86rem" }}>
-                <b>Then add this DNS record at your registrar:</b>
-                {cfg.customDomain.split(".").length > 2 ? (
-                  <div style={{ marginTop: 8, fontFamily: "var(--font-body)" }}>
-                    <div><span className="faint">Type</span> &nbsp;<b>CNAME</b></div>
-                    <div><span className="faint">Name</span> &nbsp;<b>{cfg.customDomain.split(".")[0]}</b></div>
-                    <div><span className="faint">Value</span> &nbsp;<b>cname.vercel-dns.com</b></div>
-                  </div>
-                ) : (
-                  <div style={{ marginTop: 8 }}>
-                    <div><span className="faint">Type</span> &nbsp;<b>A</b></div>
-                    <div><span className="faint">Name</span> &nbsp;<b>@</b></div>
-                    <div><span className="faint">Value</span> &nbsp;<b>76.76.21.21</b></div>
-                  </div>
-                )}
-                <p className="faint" style={{ fontSize: "0.78rem", marginTop: 10, marginBottom: 0 }}>Save below, then add the record. SSL is issued automatically once DNS resolves (usually a few minutes). Domain registration with the host may require the platform admin to enable it.</p>
+            {org.domainVerified && org.customDomain ? (
+              <div className="card-2" style={{ padding: "1rem 1.1rem", borderColor: "var(--primary)" }}>
+                <div style={{ fontWeight: 700 }}>✅ {org.customDomain} is verified &amp; live</div>
+                <a href={`https://${org.customDomain}`} target="_blank" rel="noreferrer" style={{ color: "var(--primary)", fontSize: "0.86rem" }}>Open your site ↗</a>
+                <p className="faint" style={{ fontSize: "0.78rem", margin: "8px 0 0" }}>Your crew center is served at this domain, fully white-labeled. To change it, edit above and save.</p>
               </div>
-            )}
+            ) : cfg.customDomain.trim() ? (
+              <div className="card-2" style={{ padding: "1rem 1.1rem", fontSize: "0.86rem", display: "grid", gap: 12 }}>
+                {cfg.customDomain.trim() !== (org.customDomain || "") && <div className="pill" style={{ color: "var(--primary)", borderColor: "var(--primary)" }}>Save changes first to generate your verification record</div>}
+                <div>
+                  <b>1. Point the domain at us</b>
+                  {cfg.customDomain.split(".").length > 2 ? (
+                    <div style={{ marginTop: 6 }}><div><span className="faint">Type</span> <b>CNAME</b></div><div><span className="faint">Name</span> <b>{cfg.customDomain.split(".")[0]}</b></div><div><span className="faint">Value</span> <b>cname.vercel-dns.com</b></div></div>
+                  ) : (
+                    <div style={{ marginTop: 6 }}><div><span className="faint">Type</span> <b>A</b></div><div><span className="faint">Name</span> <b>@</b></div><div><span className="faint">Value</span> <b>76.76.21.21</b></div></div>
+                  )}
+                </div>
+                {org.domainToken && org.customDomain && (
+                  <>
+                    <div>
+                      <b>2. Prove you own it</b> — add this TXT record:
+                      <div style={{ marginTop: 6 }}><div><span className="faint">Type</span> <b>TXT</b></div><div><span className="faint">Name</span> <b>_stratos.{org.customDomain}</b></div><div style={{ wordBreak: "break-all" }}><span className="faint">Value</span> <b>stratos-domain-verify={org.domainToken}</b></div></div>
+                    </div>
+                    <form action={verifyDomainAction.bind(null, org.slug)}>
+                      <button className="btn btn-primary btn-sm" type="submit">Verify domain →</button>
+                    </form>
+                  </>
+                )}
+                <p className="faint" style={{ fontSize: "0.78rem", margin: 0 }}>SSL is issued automatically once verified. The platform admin must set a Vercel token for live registration; until then the domain is saved and routes as soon as it&apos;s pointed here.</p>
+              </div>
+            ) : null}
           </Panel>
         )}
 

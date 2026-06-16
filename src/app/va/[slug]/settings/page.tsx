@@ -4,9 +4,14 @@ import { getOrgBySlug } from "@/lib/store";
 import { currentUser, orgRole } from "@/lib/auth";
 import SettingsStudio from "@/components/SettingsStudio";
 
-export default async function SettingsPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ saved?: string; welcome?: string }> }) {
+export default async function SettingsPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ saved?: string; welcome?: string; domain?: string }> }) {
   const { slug } = await params;
-  const { saved, welcome } = await searchParams;
+  const { saved, welcome, domain } = await searchParams;
+  const domainMsg: Record<string, { c: string; t: string }> = {
+    verified: { c: "var(--primary)", t: "✓ Domain verified — your crew center is now served on your own domain." },
+    dnsfail: { c: "#e0556a", t: "Couldn't find the TXT verification record yet. DNS can take a few minutes — add it and try again." },
+    notoken: { c: "#e0556a", t: "Save your domain first to generate the verification record." },
+  };
   const org = await getOrgBySlug(slug);
   if (!org) redirect("/");
   const user = await currentUser();
@@ -26,6 +31,10 @@ export default async function SettingsPage({ params, searchParams }: { params: P
           <Link href={`/va/${slug}/crew`} className="btn btn-ghost btn-sm">Crew center</Link>
         </div>
       </div>
+
+      {domain && domainMsg[domain] && (
+        <p className="pill" style={{ color: domainMsg[domain].c, borderColor: domainMsg[domain].c, marginTop: 16 }}>{domainMsg[domain].t}</p>
+      )}
 
       {welcome && (
         <div className="card" style={{ padding: "1.2rem 1.4rem", marginTop: 16, borderColor: "var(--primary)" }}>

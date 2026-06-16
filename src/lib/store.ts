@@ -26,6 +26,9 @@ export async function getUserByIfc(ifc: string): Promise<PlatformUser | null> {
   const norm = ifc.trim().toLowerCase();
   return (await b.all<PlatformUser>("users")).find((u) => u.ifcUsername.toLowerCase() === norm) || null;
 }
+export async function getUserByDiscordId(discordId: string): Promise<PlatformUser | null> {
+  return (await b.all<PlatformUser>("users")).find((u) => u.discordId === discordId) || null;
+}
 export async function createUser(ifcUsername: string, displayName: string, passwordHash: string | null): Promise<PlatformUser> {
   return b.insert<PlatformUser>("users", {
     id: undefined as unknown as number, ifcUsername: ifcUsername.trim(),
@@ -54,7 +57,8 @@ export async function getOrgById(id: number): Promise<Org | null> {
 export async function getOrgByDomain(host: string): Promise<Org | null> {
   const norm = host.trim().toLowerCase().replace(/^www\./, "");
   if (!norm) return null;
-  return (await b.all<Org>("orgs")).find((o) => (o.customDomain || "").toLowerCase().replace(/^www\./, "") === norm) || null;
+  // Only a verified domain routes — stops anyone claiming a domain they don't own.
+  return (await b.all<Org>("orgs")).find((o) => o.domainVerified && (o.customDomain || "").toLowerCase().replace(/^www\./, "") === norm) || null;
 }
 export async function listAllOrgs(): Promise<Org[]> {
   return (await b.all<Org>("orgs")).sort((a, c) => a.name.localeCompare(c.name));

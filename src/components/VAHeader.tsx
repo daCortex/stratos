@@ -32,7 +32,7 @@ export default async function VAHeader({ org }: { org: Org }) {
           authed={!!user}
           isMember={!!membership}
           canManage={canManage}
-          loginHref={`/login?next=${base}/pilot`}
+          loginHref={`${base}/login`}
         />
       </div>
     </header>

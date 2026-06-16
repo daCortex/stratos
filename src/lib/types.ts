@@ -19,6 +19,7 @@ export type PlatformUser = {
   avatar: string | null;
   createdAt: string;
   isAdmin?: boolean; // platform super-admin (controls every account & VA)
+  discordId?: string | null; // linked Discord account (OAuth sign-in)
 };
 
 /* ---- per-VA branding & customization ---- */
@@ -129,6 +130,8 @@ export type Org = {
   settings: OrgSettings;
   codeshares: Codeshare[];
   customDomain?: string | null; // e.g. "flyskyline.com" — served white-labeled
+  domainToken?: string | null; // ownership-verification token (TXT record)
+  domainVerified?: boolean; // only verified domains actually route
 };
 
 export type Warning = { reason: string; at: string };
