@@ -14,14 +14,14 @@ export default async function VAHeader({ org }: { org: Org }) {
   return (
     <header className="site-header" style={{ position: "sticky" }}>
       <div className="container-x" style={{ display: "flex", alignItems: "center", gap: 18, height: 66, position: "relative" }}>
-        <Link href={base} style={{ display: "flex", alignItems: "center", gap: 11, fontFamily: "var(--font-head)", fontWeight: 700, fontSize: "1.1rem", flexShrink: 0 }}>
+        <Link href={base} style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "var(--font-head)", fontWeight: 700, fontSize: "1.35rem", flexShrink: 0 }}>
           {org.branding.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={org.branding.logoUrl} alt={org.name} style={{ height: 32, width: "auto", maxWidth: 150, objectFit: "contain" }} />
+            <img src={org.branding.logoUrl} alt={org.name} style={{ height: 44, width: "auto", maxWidth: 200, objectFit: "contain" }} />
           ) : (
             <>
-              <span style={{ width: 30, height: 30, borderRadius: "calc(var(--radius) - 5px)", background: "linear-gradient(135deg, var(--primary), var(--accent))" }} />
-              <span style={{ letterSpacing: "-0.01em" }}>{org.name}</span>
+              <span style={{ width: 38, height: 38, borderRadius: "calc(var(--radius) - 4px)", background: "linear-gradient(135deg, var(--primary), var(--accent))" }} />
+              <span style={{ letterSpacing: "-0.02em" }}>{org.name}</span>
             </>
           )}
         </Link>

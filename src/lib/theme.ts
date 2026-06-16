@@ -15,6 +15,9 @@ export type FontDef = {
 
 export const FONT_CATALOG: FontDef[] = [
   { key: "inter", name: "Inter", stack: "'Inter', system-ui, sans-serif", google: "Inter:wght@300;400;500;600;700" },
+  { key: "fraunces", name: "Fraunces (premium serif)", stack: "'Fraunces', Georgia, serif", google: "Fraunces:opsz,wght@9..144,300..700" },
+  { key: "instrument-serif", name: "Instrument Serif (elegant)", stack: "'Instrument Serif', Georgia, serif", google: "Instrument+Serif:ital@0;1" },
+  { key: "bricolage", name: "Bricolage Grotesque", stack: "'Bricolage Grotesque', system-ui, sans-serif", google: "Bricolage+Grotesque:opsz,wght@12..96,300..700" },
   { key: "montserrat", name: "Montserrat", stack: "'Montserrat', system-ui, sans-serif", google: "Montserrat:wght@200;300;400;500;600;700" },
   { key: "poppins", name: "Poppins", stack: "'Poppins', system-ui, sans-serif", google: "Poppins:wght@300;400;500;600;700" },
   { key: "sora", name: "Sora", stack: "'Sora', system-ui, sans-serif", google: "Sora:wght@300;400;500;600;700" },
@@ -117,7 +120,7 @@ export function defaultBranding(hue = 215): Branding {
     accentHue: (hue + 40) % 360,
     mode: "dark",
     font: "inter",
-    headingFont: "sora",
+    headingFont: "fraunces",
     radius: 14,
     bgType: "solid",
     bgValue: "",

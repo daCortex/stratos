@@ -7,7 +7,7 @@
 ------------------------------------------------------------------- */
 :root {
   --bg: #0D1B2A;
-  --page-bg: #0D1B2A;
+  --page-bg: radial-gradient(1100px 560px at 50% -8%, hsl(43 55% 52% / 0.13), transparent 62%), #0D1B2A;
   --surface: #122438;
   --surface-2: #1a3047;
   --border: #2a3e52;
@@ -25,8 +25,8 @@
   --header-blur: saturate(140%) blur(12px);
   --header-border: #2a3e52;
   --shadow: 0 1px 2px hsl(0 0% 0% / 0.4), 0 8px 24px hsl(0 0% 0% / 0.22);
-  --font-body: 'Jost', system-ui, sans-serif;
-  --font-head: 'Jost', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-head: 'Fraunces', Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -47,7 +47,7 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4, .head { font-family: var(--font-head); font-weight: 600; letter-spacing: -0.015em; line-height: 1.15; }
+h1, h2, h3, h4, .head { font-family: var(--font-head); font-weight: 600; letter-spacing: -0.015em; line-height: 1.12; font-optical-sizing: auto; }
 a { color: inherit; text-decoration: none; }
 ::selection { background: var(--primary); color: var(--on-primary); }
 

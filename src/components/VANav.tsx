@@ -49,16 +49,20 @@ export default function VANav({
           <Link key={n.key} href={`${base}${n.href}`} className={`nav-link${isActive(n.href) ? " active" : ""}`}>{n.label}</Link>
         ))}
         {overflow.length > 0 && (
-          <div style={{ position: "relative" }} onMouseLeave={() => setMore(false)}>
-            <button className="nav-link" onClick={() => setMore((o) => !o)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-body)", display: "flex", alignItems: "center", gap: 4 }}>
+          <div style={{ position: "relative" }}>
+            <button className={`nav-link${more ? " active" : ""}`} onClick={() => setMore((o) => !o)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-body)", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: 4 }}>
               More <span style={{ fontSize: "0.65rem" }}>▾</span>
             </button>
             {more && (
-              <div className="mobile-panel" style={{ position: "absolute", top: "calc(100% + 10px)", left: 0, minWidth: 170, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius)", boxShadow: "var(--shadow)", padding: 6, display: "flex", flexDirection: "column", zIndex: 60 }}>
-                {overflow.map((n) => (
-                  <Link key={n.key} href={`${base}${n.href}`} onClick={() => setMore(false)} className="muted" style={{ padding: "0.5rem 0.7rem", borderRadius: "calc(var(--radius) - 6px)", fontSize: "0.88rem" }}>{n.label}</Link>
-                ))}
-              </div>
+              <>
+                {/* click-away catcher */}
+                <div onClick={() => setMore(false)} style={{ position: "fixed", inset: 0, zIndex: 55 }} />
+                <div className="mobile-panel" style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 190, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius)", boxShadow: "var(--shadow)", padding: 6, display: "flex", flexDirection: "column", zIndex: 60 }}>
+                  {overflow.map((n) => (
+                    <Link key={n.key} href={`${base}${n.href}`} onClick={() => setMore(false)} className="nav-link" style={{ padding: "0.6rem 0.7rem", borderRadius: "calc(var(--radius) - 6px)", fontSize: "0.95rem" }}>{n.label}</Link>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}

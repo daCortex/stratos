@@ -11,7 +11,7 @@ export default async function PlatformHeader() {
       <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 66 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/stratos-reversed.svg" alt="Stratos" style={{ height: 30, width: "auto" }} />
+          <img src="/brand/stratos-reversed.svg" alt="Stratos" style={{ height: 40, width: "auto" }} />
         </Link>
         <nav style={{ display: "flex", alignItems: "center", gap: 18, fontSize: "0.9rem" }}>
           <Link href="/explore" className="muted">Explore VAs</Link>
