@@ -29,6 +29,26 @@ const TOPICS: Topic[] = [
     ],
   },
   {
+    key: "modules", title: "Modules & integrations",
+    blocks: [
+      { p: "Settings → Modules switches on optional power features. They're off by default, so you only get what you want." },
+      { h: "Live flight map", p: "A real-time map of your pilots airborne on Infinite Flight. Adds a “Live” page to your menu. Needs the platform's Infinite Flight API key configured." },
+      { h: "Infinite Flight verification", p: "Pilots prove they own their IFC account and pull their real grade & hours onto their flight deck — trustworthy data, no cheating." },
+      { h: "Analytics dashboard", p: "Charts for owners — flights per month, pilot growth, top routes and pilots. Adds an “Analytics” tab to the crew center." },
+      { h: "Sign in with Discord", p: "When the platform admin configures Discord OAuth, a “Continue with Discord” button appears on login/signup. Otherwise pilots use their IFC username and password." },
+    ],
+  },
+  {
+    key: "domain", title: "Use your own domain",
+    blocks: [
+      { p: "Make your crew center live on your own domain (flyyourva.com) — fully white-labeled, with valid HTTPS and no “Stratos” anywhere. Settings → Domain." },
+      { h: "Step 1 — point the domain at us", p: "Add the DNS record we show you at your registrar: an A record for a root domain (flyyourva.com), or a CNAME for a subdomain (crew.flyyourva.com)." },
+      { h: "Step 2 — prove you own it", steps: ["Save your domain — we generate a verification token.", "Add the TXT record we show: name “_stratos.yourdomain”, value “stratos-domain-verify=<token>”.", "Click Verify — we check the record over DNS."] },
+      { h: "Step 3 — go live", p: "Once verified, your domain serves only your crew center. SSL is issued automatically; it can take a few minutes for DNS to propagate." },
+      { note: "Only a verified domain routes, so no one can claim a domain they don't own. Custom-domain registration may need the platform admin to enable it (a Vercel token)." },
+    ],
+  },
+  {
     key: "invites", title: "Invite codes & joining",
     blocks: [
       { p: "All invite tools live in Crew center → Invites (/va/<slug>/crew/invites)." },

@@ -1,5 +1,20 @@
 # Changelog
 
+**v1.2 — June 16, 2026**
+
+✨ **New**
+- Connect your own domain — verify ownership with a DNS record, then your crew center serves on your domain, fully white-labeled with HTTPS
+- Sign in with Discord — one-click OAuth on every login and signup
+- Pilots sign in on your domain — host-scoped accounts so login works on your custom domain, not just ours
+
+🔧 **Improved**
+- Only verified domains route, so nobody can claim a domain they don't own
+
+Full details on bigger releases go in **#announcements**.
+💬 Community & support: https://discord.gg/f4rhKFa6MD
+
+---
+
 **v1.1 — June 16, 2026**
 
 ✨ **New**
