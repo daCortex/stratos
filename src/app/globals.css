@@ -6,12 +6,15 @@
    so every surface repaints to their colours, type, density and shape.
 ------------------------------------------------------------------- */
 :root {
-  --bg: #0D1B2A;
-  --page-bg: radial-gradient(1100px 560px at 50% -8%, hsl(43 55% 52% / 0.13), transparent 62%), #0D1B2A;
-  --surface: #122438;
-  --surface-2: #1a3047;
-  --border: #2a3e52;
-  --text: #F4F1EB;
+  --bg: #091421;
+  --page-bg:
+    radial-gradient(1200px 620px at 50% -10%, hsl(43 60% 52% / 0.14), transparent 60%),
+    radial-gradient(900px 700px at 100% 110%, hsl(210 60% 30% / 0.18), transparent 60%),
+    #091421;
+  --surface: #0f2032;
+  --surface-2: #172b41;
+  --border: #26384c;
+  --text: #F6F3EC;
   --text-dim: #b9c2cc;
   --text-faint: #7c8a99;
   --primary: #C9A84C;
@@ -21,10 +24,11 @@
   --radius: 14px;
   --btn-radius: 10px;
   --space: 1;
-  --header-bg: color-mix(in srgb, #122438 78%, transparent);
-  --header-blur: saturate(140%) blur(12px);
-  --header-border: #2a3e52;
-  --shadow: 0 1px 2px hsl(0 0% 0% / 0.4), 0 8px 24px hsl(0 0% 0% / 0.22);
+  --header-bg: color-mix(in srgb, #0f2032 72%, transparent);
+  --header-blur: saturate(150%) blur(14px);
+  --header-border: #22364c;
+  --shadow: 0 2px 4px hsl(216 45% 3% / 0.5), 0 16px 38px -12px hsl(216 45% 3% / 0.5);
+  --card-top: inset 0 1px 0 hsl(0 0% 100% / 0.055);
   --font-body: 'Inter', system-ui, sans-serif;
   --font-head: 'Fraunces', Georgia, serif;
 }
@@ -62,10 +66,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ---- surfaces ---- */
 .card {
-  background: var(--surface);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 100%, transparent), color-mix(in srgb, var(--surface) 94%, #000));
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--card-top, none), var(--shadow);
 }
 .card-2 { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
 a.card, .card-link { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
@@ -80,8 +85,12 @@ a.card:hover, .card-link:hover { transform: translateY(-2px); border-color: colo
   transition: transform .12s ease, opacity .15s ease, background .15s ease, border-color .15s ease;
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--primary); color: var(--on-primary); }
-.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 86%, #fff), var(--primary) 52%, color-mix(in srgb, var(--primary) 88%, #000));
+  color: var(--on-primary);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.35), 0 6px 18px -7px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.btn-primary:hover { filter: brightness(1.05) saturate(1.05); }
 .btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
 .btn-ghost:hover { background: var(--surface-2); border-color: color-mix(in srgb, var(--primary) 35%, var(--border)); }
 .btn-sm { padding: calc(0.38rem * var(--space)) calc(0.75rem * var(--space)); font-size: 0.8rem; }
@@ -104,6 +113,16 @@ a.card:hover, .card-link:hover { transform: translateY(-2px); border-color: colo
 .faint { color: var(--text-faint); }
 .pill { display: inline-flex; align-items: center; gap: .35rem; padding: .22rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 600; border: 1px solid var(--border); }
 .gradient-text { background: linear-gradient(100deg, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Premium hero shine — a slow luminous sweep across gradient headline text. */
+.gradient-text-shine {
+  background: linear-gradient(100deg, var(--primary) 0%, var(--accent) 38%, #fff8e6 50%, var(--accent) 62%, var(--primary) 100%);
+  background-size: 230% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: head-shine 6.5s var(--ease-lux, ease) 1s infinite;
+}
+@keyframes head-shine { 0% { background-position: 135% 0; } 55%, 100% { background-position: -35% 0; } }
+@media (prefers-reduced-motion: reduce) { .gradient-text-shine { animation: none; } }
 .hairline { border-top: 1px solid var(--border); }
 
 /* ---- tables ---- */

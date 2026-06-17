@@ -26,7 +26,7 @@ export default async function Home() {
           <div className="reveal" style={{ maxWidth: 820, margin: "0 auto" }}>
             <span className="pill" style={{ borderColor: "var(--primary)", color: "var(--primary)" }}>For Infinite Flight virtual airlines</span>
             <h1 style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)", lineHeight: 1.05, margin: "1.2rem 0 0" }}>
-              Launch a crew center<br /><span className="gradient-text">that feels like your own website.</span>
+              Launch a crew center<br /><span className="gradient-text-shine">that feels like your own website.</span>
             </h1>
             <p className="muted" style={{ fontSize: "1.15rem", marginTop: "1.4rem", maxWidth: 620, marginInline: "auto" }}>
               Stratos is the platform that quietly powers virtual airline crew centers. Sign up, brand it, add your pilots —
