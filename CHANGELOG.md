@@ -1,5 +1,22 @@
 # Changelog
 
+**v1.3 — June 16, 2026**
+
+✨ **New**
+- Every feature on the home page now has its own icon (was a plain gold tile)
+
+🔧 **Improved**
+- Premium visual refresh — a modern display serif, metallic-gold buttons, deeper layered navy, a subtle hero shine, and richer card depth
+- Larger, clearer logos across the platform and crew centers
+
+🐞 **Fixed**
+- The "More" navigation menu (Shop, News, Roster, Apply…) is now clickable
+
+Full details on bigger releases go in **#announcements**.
+💬 Community & support: https://discord.gg/f4rhKFa6MD
+
+---
+
 **v1.2 — June 16, 2026**
 
 ✨ **New**
