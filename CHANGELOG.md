@@ -1,5 +1,17 @@
 # Changelog
 
+**v1.4 — June 21, 2026**
+
+✨ **New**
+- **PIREP logs in Discord** — drop a webhook URL into your customization tab (Engage → Discord integration) and every filed flight posts to your channel as a clean embed: pilot, callsign, route, aircraft, flight time, landing rate, server & approval status
+- Use a **dedicated PIREP-log channel** separate from your general announcements — or leave it blank to share one webhook
+- **Send test message** button to confirm the channel works in one click, before a single flight is filed
+
+Full details on bigger releases go in **#announcements**.
+💬 Community & support: https://discord.gg/f4rhKFa6MD
+
+---
+
 **v1.3 — June 16, 2026**
 
 ✨ **New**
