@@ -29,3 +29,24 @@ export const AIRPORTS: Record<string, [number, number]> = {
 export function airportLatLon(icao: string): [number, number] | null {
   return AIRPORTS[icao?.toUpperCase()] || null;
 }
+
+/* Nearest known airport to a lat/lon, with great-circle distance in nautical
+   miles. Used by auto-PIREP capture to infer departure/arrival from position. */
+export function nearestAirport(
+  lat: number,
+  lon: number
+): { icao: string; distanceNm: number } | null {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  let best: { icao: string; distanceNm: number } | null = null;
+  for (const icao in AIRPORTS) {
+    const [alat, alon] = AIRPORTS[icao];
+    const dLat = toRad(alat - lat);
+    const dLon = toRad(alon - lon);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat)) * Math.cos(toRad(alat)) * Math.sin(dLon / 2) ** 2;
+    const nm = 3440.065 * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    if (!best || nm < best.distanceNm) best = { icao, distanceNm: nm };
+  }
+  return best;
+}

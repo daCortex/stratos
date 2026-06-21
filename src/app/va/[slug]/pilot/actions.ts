@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { getOrgBySlug, getMembership, createPirep, createLoa, onPirepApproved, toggleEventSignup, redeemItem, markNotificationsRead } from "@/lib/store";
-import { fireWebhook } from "@/lib/webhook";
+import { fireWebhook, firePirepLog } from "@/lib/webhook";
 
 export async function eventSignupAction(slug: string, formData: FormData) {
   const org = await getOrgBySlug(slug); if (!org) return;
@@ -81,7 +81,12 @@ export async function filePirepAction(slug: string, formData: FormData) {
     autoApprove
   );
   if (autoApprove) await onPirepApproved(pirep);
-  await fireWebhook(org!.settings.discordWebhook, `**${m!.callsign}** filed ${pirep.flightNo}: ${pirep.dep} → ${pirep.arr} · ${Math.floor(pirep.minutes / 60)}h ${pirep.minutes % 60}m`, "✈️ New PIREP");
+  await firePirepLog(org!, {
+    pilot: user!.displayName, callsign: m!.callsign,
+    flightNo: pirep.flightNo, dep: pirep.dep, arr: pirep.arr, aircraft: pirep.aircraft,
+    minutes: pirep.minutes, landingRate: pirep.landingRate, server: pirep.server,
+    multiplierCode: pirep.multiplierCode, autoApproved: autoApprove,
+  });
   revalidatePath(`/va/${slug}/pilot`);
   redirect(`/va/${slug}/pilot?filed=1`);
 }

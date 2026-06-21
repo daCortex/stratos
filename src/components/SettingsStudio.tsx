@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Org, Branding, NavItem, Hub, Aircraft, Rank, Multiplier, Codeshare } from "@/lib/types";
 import { brandingToCss, FONT_CATALOG, googleFontHref, orgModules } from "@/lib/theme";
+import { isWebhookUrl } from "@/lib/webhook";
 import { saveOrgConfigAction, verifyDomainAction } from "@/app/va/[slug]/settings/actions";
 
 type Cfg = {
@@ -240,9 +241,17 @@ export default function SettingsStudio({ org, saved }: { org: Org; saved?: boole
             </Field>
             <Toggle label="Banner URL is a looping video" v={cfg.settings.bannerVideo} set={(v) => setS({ bannerVideo: v })} />
             <Toggle label="Show SimBrief flight-briefing links on routes" v={cfg.settings.simbrief} set={(v) => setS({ simbrief: v })} />
-            <Field label="Discord webhook URL (fires on PIREPs & events)">
-              <input className="input" value={cfg.settings.discordWebhook} onChange={(e) => setS({ discordWebhook: e.target.value })} placeholder="https://discord.com/api/webhooks/…" />
-            </Field>
+            <div style={{ borderTop: "1px solid var(--border)", paddingTop: 14, marginTop: 4 }}>
+              <h3 style={{ margin: "0 0 2px" }}>Discord integration</h3>
+              <p className="faint" style={{ fontSize: "0.84rem", margin: "0 0 12px" }}>Pipe activity straight into your server. Paste a channel webhook (Server Settings → Integrations → Webhooks → Copy URL).</p>
+              <Field label="General webhook — new events &amp; announcements">
+                <input className="input" value={cfg.settings.discordWebhook} onChange={(e) => setS({ discordWebhook: e.target.value })} placeholder="https://discord.com/api/webhooks/…" />
+              </Field>
+              <Field label="PIREP-log channel — every filed flight (optional)">
+                <input className="input" value={cfg.settings.pirepWebhook ?? ""} onChange={(e) => setS({ pirepWebhook: e.target.value })} placeholder="https://discord.com/api/webhooks/…  (leave blank to use the general one)" />
+                <WebhookTest url={(cfg.settings.pirepWebhook || cfg.settings.discordWebhook) ?? ""} vaName={cfg.name} prefix={cfg.callsignPrefix} />
+              </Field>
+            </div>
             <div>
               <label className="label">Codeshare partners</label>
               {cfg.codeshares.map((c, i) => (
@@ -401,6 +410,51 @@ function Segmented({ value, options, onChange }: { value: string; options: [stri
 }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label className="label">{label}</label>{children}</div>;
+}
+/* Client-side "send test" — posts a sample PIREP embed straight to the channel
+   so the owner can confirm the webhook works without saving or filing a flight.
+   Discord webhook endpoints send Access-Control-Allow-Origin:*, so this works
+   from the browser. */
+function WebhookTest({ url, vaName, prefix }: { url: string; vaName: string; prefix: string }) {
+  const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
+  const valid = isWebhookUrl(url);
+  async function send() {
+    if (!valid) return;
+    setState("sending");
+    try {
+      const res = await fetch(url.trim(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "Stratos",
+          embeds: [{
+            title: "✈️ Test PIREP — " + (prefix || "STR") + "001",
+            color: 0x7dd8a8,
+            fields: [
+              { name: "Pilot", value: "Test Pilot · `" + (prefix || "STR") + "001`", inline: true },
+              { name: "Aircraft", value: "A320neo", inline: true },
+              { name: "Route", value: "EGLL → LFPG", inline: true },
+              { name: "Flight time", value: "1h 15m", inline: true },
+              { name: "Server", value: "Expert", inline: true },
+              { name: "Status", value: "✅ Approved", inline: true },
+            ],
+            footer: { text: (vaName || "Your VA") + " · Stratos test message" },
+          }],
+        }),
+      });
+      setState(res.ok ? "ok" : "err");
+    } catch { setState("err"); }
+  }
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6 }}>
+      <button type="button" className="btn btn-ghost btn-sm" disabled={!valid || state === "sending"} onClick={send} style={{ opacity: valid ? 1 : 0.5 }}>
+        {state === "sending" ? "Sending…" : "Send test message"}
+      </button>
+      {state === "ok" && <span style={{ fontSize: "0.82rem", color: "#7dd8a8" }}>✓ Sent — check your channel</span>}
+      {state === "err" && <span style={{ fontSize: "0.82rem", color: "#e0556a" }}>✕ Failed — double-check the URL</span>}
+      {state === "idle" && !valid && url.trim() !== "" && <span className="faint" style={{ fontSize: "0.82rem" }}>Not a valid Discord webhook URL</span>}
+    </div>
+  );
 }
 function Toggle({ label, v, set }: { label: string; v: boolean; set: (v: boolean) => void }) {
   return (

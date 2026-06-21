@@ -198,6 +198,7 @@ export function defaultSettings(name: string): OrgSettings {
     bannerUrl: "",
     bannerVideo: false,
     discordWebhook: "",
+    pirepWebhook: "",
     simbrief: true,
     currency: "miles",
     modules: { liveMap: false, analytics: false, ifVerify: false },

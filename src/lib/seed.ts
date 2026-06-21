@@ -2,6 +2,7 @@ import type {
   PlatformUser, Org, Membership, Pirep, NewsPost, Loa, Report, Invite,
   Route, EventItem, Award, EarnedAward, Notam, Challenge, ChallengeProgress,
   PointsEntry, ShopItem, Redemption, Notification, ApplicationForm, Application, Incident,
+  FlightTrack,
 } from "./types";
 import { defaultBranding, defaultNav, defaultRanks, defaultMultipliers, defaultHubs, defaultFleet, defaultSettings } from "./theme";
 import { hashSecret } from "./crypto";
@@ -31,6 +32,7 @@ export type DB = {
   appForms: ApplicationForm[];
   applications: Application[];
   incidents: Incident[];
+  flightTracks: FlightTrack[];
   seq: number;
 };
 
@@ -39,6 +41,7 @@ export const COLLECTIONS = [
   "users", "orgs", "members", "pireps", "news", "loas", "reports", "invites",
   "routes", "events", "awards", "earned", "notams", "challenges", "challengeProgress",
   "points", "shop", "redemptions", "notifications", "applications", "incidents",
+  "flightTracks",
 ] as const;
 export type Collection = (typeof COLLECTIONS)[number];
 
@@ -47,13 +50,14 @@ export const ORG_SCOPED: Record<string, boolean> = {
   members: true, pireps: true, news: true, loas: true, reports: true, invites: true,
   routes: true, events: true, awards: true, earned: true, notams: true, challenges: true,
   challengeProgress: true, points: true, shop: true, redemptions: true, notifications: true, applications: true,
+  flightTracks: true,
 };
 
 export function emptyDB(): DB {
   return {
     users: [], orgs: [], members: [], pireps: [], news: [], loas: [], reports: [], invites: [],
     routes: [], events: [], awards: [], earned: [], notams: [], challenges: [], challengeProgress: [],
-    points: [], shop: [], redemptions: [], notifications: [], appForms: [], applications: [], incidents: [], seq: 0,
+    points: [], shop: [], redemptions: [], notifications: [], appForms: [], applications: [], incidents: [], flightTracks: [], seq: 0,
   };
 }
 

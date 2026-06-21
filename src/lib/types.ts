@@ -97,7 +97,8 @@ export type OrgSettings = {
   pointsPerPirep: number; // flat points per approved PIREP
   bannerUrl: string; // hero banner image/video (animated banner)
   bannerVideo: boolean; // treat bannerUrl as a looping video
-  discordWebhook: string; // Discord webhook fired on PIREP/events
+  discordWebhook: string; // Discord webhook fired on PIREP/events (general)
+  pirepWebhook: string; // dedicated channel for PIREP logs (falls back to discordWebhook)
   simbrief: boolean; // show SimBrief briefing links
   currency: string; // name of the points currency, e.g. "miles"
   modules: OrgModules; // opt-in Tier-2 features
@@ -386,4 +387,25 @@ export type Application = {
   score: number | null; // quiz % if any quiz questions
   status: "pending" | "accepted" | "rejected";
   at: string;
+};
+
+/* In-progress live flight being tracked for auto-PIREP capture. One row per
+   airborne flight that matches a VA callsign + a known pilot; finalized into a
+   Pirep when the flight leaves the live feed. */
+export type FlightTrack = {
+  id: number;
+  orgId: number;
+  membershipId: number;
+  flightId: string; // IF flightId (per-flight)
+  ifUsername: string;
+  callsign: string;
+  aircraftId: string;
+  server: string;
+  dep: string; // nearest airport at first sighting
+  startedAt: string;
+  lastSeenAt: string;
+  lastLat: number;
+  lastLon: number;
+  maxAltitude: number;
+  ticks: number;
 };
